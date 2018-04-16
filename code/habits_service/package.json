@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "cp test.bak test.db && DEBUG=1 npx mocha"
   },
   "author": "",

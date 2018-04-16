@@ -4,7 +4,7 @@ const constants = require('./constants');
 
 module.exports = (options) => {
   const persistence = require('./persistence')({
-    databaseFile: process.env.DEBUG ? constants.TEST_DATABASE_FILE : ''
+    databaseFile: process.env.DEBUG ? constants.TEST_DATABASE_FILE : constants.PRODUCTION_DATABASE_FILE 
   });
 
   const getHabitScoreCategory = (score) => {

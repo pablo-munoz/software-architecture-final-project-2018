@@ -33,9 +33,9 @@ app.route('/accounts/register')
      return response.status(200).json(account);
    });
 
-app.route('/acconts/login')
+app.route('/accounts/login')
    .post((request, response) => {
-     if (!_.every(['email', 'name'], _.partial(_.has, request.body, _))) {
+     if (!_.every(['email'], _.partial(_.has, request.body, _))) {
        return response.status(400)
                       .json({
                         msg: 'Wrong body',
@@ -56,5 +56,6 @@ app.route('/acconts/login')
      return response.status(200).json(account);
    });
 
+console.log('accounts server listening on port 8081');
 const port = process.env.PORT || 8081;
 http.createServer(app).listen(port);

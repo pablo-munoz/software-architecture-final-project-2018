@@ -13,4 +13,5 @@ app.route('/reports')
 
 setInterval(makeAdminReport, 1000*60*30);
 
+console.log('reports service listening on ports 8084');
 http.createServer(app).listen(8084);

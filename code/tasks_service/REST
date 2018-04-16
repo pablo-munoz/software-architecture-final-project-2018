@@ -1,0 +1,40 @@
+# -*- mode: restclient -*-
+
+GET http://localhost:8083/tasks
+
+# Get tasks for just one user
+GET http://localhost:8083/tasks
+Content-Type: application/json
+{
+  "account": "another@test.com"
+}
+
+# Create a task
+POST http://localhost:8083/tasks
+Content-Type: application/json
+{
+  "title": "Test the api",
+  "description": "Use emacs restclient mode to test api",
+  "due_date": "2018-04-19",
+  "reminder_days": 1,
+  "reminder_time": "13:00:00",
+  "account": "another@test.com"
+}
+
+# Update a task
+PUT http://localhost:8083/tasks/6
+Content-Type: application/json
+{
+  "title": "TEST THE API",
+  "description": "Use emacs restclient mode to test api",
+  "due_date": "2018-04-19",
+  "reminder_days": 1,
+  "reminder_time": "13:00:00",
+  "account": "another@test.com"
+}
+
+# Do a task
+POST http://localhost:8083/tasks/6/do
+
+# Delete a task
+DELETE http://localhost:8083/tasks/6

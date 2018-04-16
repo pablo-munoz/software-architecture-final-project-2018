@@ -1,0 +1,28 @@
+version: '2'
+services:
+  accounts:
+    build:
+      context: accounts_service
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+  habits:
+    build:
+      context: habits_service
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+  tasks:
+    build:
+      context: tasks_service
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+  reports:
+    build:
+      context: reports_service
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8084
+    environment:
+      PRODUCTION: 1

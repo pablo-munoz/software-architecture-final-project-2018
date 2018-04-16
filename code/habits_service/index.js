@@ -52,4 +52,5 @@ app.route('/habits/:id/do')
    });
 
 
+console.log('habits server listening on port 8082');
 http.createServer(app).listen(8082);

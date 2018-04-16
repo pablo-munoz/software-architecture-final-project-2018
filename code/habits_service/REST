@@ -1,0 +1,38 @@
+# -*- mode: restclient -*-
+
+GET http://localhost:8082/habits
+
+# Get habits for just one user
+GET http://localhost:8082/habits
+Content-Type: application/json
+{
+  "account": "another@test.com"
+}
+
+# Create a habit
+POST http://localhost:8082/habits
+Content-Type: application/json
+{
+  "kind": "bad",
+  "difficulty": "medium",
+  "name": "sleeping in class",
+  "score": 0,
+  "account": "another@test.com"
+}
+
+# Update a habit
+PUT http://localhost:8082/habits/20 
+Content-Type: application/json
+{
+  "kind": "bad",
+  "difficulty": "medium",
+  "name": "SLEEPING IN CLASS",
+  "score": 0,
+  "account": "another@test.com"
+}
+
+# Do a habit
+POST http://localhost:8082/habits/6/do
+
+# Delete a habit
+DELETE http://localhost:8082/habits/6

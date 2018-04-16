@@ -51,4 +51,5 @@ app.route('/tasks/:id/do')
    });
 
 
+console.log('tasks server listening on port 8083');
 http.createServer(app).listen(8083);

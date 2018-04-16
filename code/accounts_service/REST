@@ -1,0 +1,16 @@
+# -*- mode: restclient -*-
+
+POST http://localhost:8081/accounts/register
+Content-Type: application/json
+{
+  "email": "pablosdesk@gmail.com",
+  "name": "pablo"
+}
+
+#
+
+POST http://localhost:8081/accounts/login
+Content-Type: application/json
+{
+  "email": "pablosdesk@gmail.com"
+}

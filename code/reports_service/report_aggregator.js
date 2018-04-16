@@ -2,6 +2,9 @@ const fs = require('fs');
 const _ = require('lodash');
 const http = require('http');
 
+const HABITS_HOST = process.env.PRODUCTION ? 'habits' : 'localhost';
+const TASKS_HOST = process.env.PRODUCTION ? 'tasks' : 'localhost';
+
 const formatDate = (date) => {
   var d = new Date(date),
       month = '' + (d.getMonth() + 1),
@@ -17,7 +20,7 @@ const formatDate = (date) => {
 const aggregateHabits = () => {
   return new Promise((fulfill, reject) => {
     const req = http.request({
-      host: 'localhost',
+      host: HABITS_HOST,
       port: '8082',
       path: '/habits',
       method: 'GET',
@@ -81,7 +84,7 @@ const aggregateHabits = () => {
 const aggregateTasks = () => {
   return new Promise((fulfill, reject) => {
     const req = http.request({
-      host: 'localhost',
+      host: TASKS_HOST,
       port: '8083',
       path: '/tasks',
       method: 'GET',
