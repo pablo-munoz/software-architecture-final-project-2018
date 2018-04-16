@@ -1,4 +1,3 @@
-const fs = require('fs');
 const chai = require('chai');
 const should = chai.should();
 const errors = require('../errors');
@@ -13,7 +12,6 @@ describe('Accounts service persistence layer', function() {
     databaseFile: TEST_DATABASE_FILE
   });
 
-  fs.writeFileSync(TEST_DATABASE_FILE, '[]');
 
   it('persistence layer should insert a new user', function() {
     persistence.insertAccount({
@@ -94,7 +92,6 @@ describe('Accounts service business layer', function() {
     });
   });
   
-  fs.writeFileSync('test2.db', '[]');
 });
 
 describe('Accounts service api', function() {
@@ -102,16 +99,16 @@ describe('Accounts service api', function() {
     request(server)
       .post('/accounts/register')
       .send({
-        email: 'apiuser@test.com',
-        name: 'apiuser'
+        email: 'newuser@test.com',
+        name: 'newuser'
       })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
       .end(function(err, res) {
         res.body.should.be.eql({
-          email: 'apiuser@test.com',
-          name: 'apiuser'
+          email: 'newuser@test.com',
+          name: 'newuser'
         });
       });
 
@@ -122,30 +119,30 @@ describe('Accounts service api', function() {
     request(server)
       .post('/accounts/register')
       .send({
-        email: 'existinguser@test.com',
-        name: 'existinguser'
+        email: 'loginuser@test.com',
+        name: 'loginuser'
       })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
       .end(function(err, res) {
         res.body.should.be.eql({
-          email: 'existinguser@test.com',
-          name: 'existinguser'
+          email: 'loginuser@test.com',
+          name: 'loginuser'
         });
 
         request(server)
           .post('/accounts/login')
           .send({
-            email: 'existinguser@test.com',
+            email: 'loginuser@test.com',
           })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
           .end(function(err, res) {
             res.body.should.be.eql({
-              email: 'existinguser@test.com',
-              name: 'existinguser'
+              email: 'loginuser@test.com',
+              name: 'loginuser'
             });
           });
       });

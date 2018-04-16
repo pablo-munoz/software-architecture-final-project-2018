@@ -1,10 +1,10 @@
 {
-  "name": "accounts_service",
+  "name": "reports_service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "DEBUG=1 cp test.bak test.db && cp test.bak test2.db && npx mocha"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",

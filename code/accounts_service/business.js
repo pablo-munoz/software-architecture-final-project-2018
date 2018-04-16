@@ -4,7 +4,7 @@ const utils = require('./utils');
 
 module.exports = function(options) {
   const persistence = require('./persistence')({
-    databaseFile: options.DEBUG ? 'test2.db' : 'accounts.db'
+    databaseFile: process.env.DEBUG ? 'test2.db' : 'accounts.db'
   });
 
   const createAccount = function(accountData) {
@@ -12,8 +12,8 @@ module.exports = function(options) {
       throw errors.invalidAccountData;
     }
 
-    const emailAlreadyInUse = persistence.selectAccount(
-      _.pick(accountData, 'email')) !== undefined;
+    const emailAlreadyInUse = !!persistence.selectAccount(
+      _.pick(accountData, 'email'));
 
     if (emailAlreadyInUse) {
       throw errors.emailInUse;

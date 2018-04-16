@@ -1,0 +1,3 @@
+# -*- mode: restclient -*-
+
+GET http://localhost:8084/reports

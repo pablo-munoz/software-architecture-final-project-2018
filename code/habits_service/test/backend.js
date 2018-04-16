@@ -170,7 +170,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': -1,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'good', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(2.0);
@@ -185,7 +185,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 0,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'good', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(3.0);
@@ -200,7 +200,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 10,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'good', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(13.0);
@@ -215,7 +215,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 40,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'good', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(41.5);
@@ -230,7 +230,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 50,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'good', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(51.0);
@@ -245,7 +245,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': -1,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'bad', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(-7.0);
@@ -260,7 +260,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 0,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'bad', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(-4.5);
@@ -275,7 +275,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 10,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'bad', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(7.0);
@@ -290,7 +290,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 40,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'bad', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(37.0);
@@ -305,7 +305,7 @@ describe('Habits service business layer', () => {
       'difficulty': 'medium',
       'score': 50,
       'name': 'Do homework',
-      'account': 'Do red'
+      'account': 'another@test.com'
     }, (err, habit) => {
       business.updateHabitScore(habit, 'bad', (err, scoredHabit) => {
         expect(scoredHabit.score).to.be.equal(47.0);
