@@ -2,9 +2,12 @@ const http = require('http');
 const _ = require('lodash');
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors');
 const { makeAdminReport } = require('./report_aggregator');
 
 const app = express();
+
+app.use(cors());
 
 app.route('/reports')
    .get((request, response) => {
