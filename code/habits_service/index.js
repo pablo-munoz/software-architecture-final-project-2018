@@ -27,6 +27,14 @@ app.route('/habits')
    });
 
 app.route('/habits/:id')
+   .get((request, response) => {
+     const habitId = request.params.id;
+
+     business.getHabit(habitId, (err, habit) => {
+       if (err) return reposnse.status(400).json(err);
+       return response.json(habit);
+     });
+   })
    .put((request, response) => {
      const newHabitData = request.body;
 

@@ -9,6 +9,9 @@ Content-Type: application/json
   "account": "another@test.com"
 }
 
+# Get a habit
+GET http://localhost:8082/habits/1
+
 # Create a habit
 POST http://localhost:8082/habits
 Content-Type: application/json

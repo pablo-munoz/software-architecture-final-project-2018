@@ -67,6 +67,10 @@ module.exports = (options) => {
     persistence.listHabits(searchCriteria, callback);
   }
 
+  const getHabit = (habitId, callback) => {
+    persistence.getHabit(habitId, callback);
+  };
+
   const updateHabit = (id, newHabitData, callback) => {
     persistence.updateHabit(id, newHabitData, callback);
   }
@@ -78,6 +82,7 @@ module.exports = (options) => {
   return {
     createHabit,
     updateHabitScore,
+    getHabit,
     listHabits,
     updateHabit,
     deleteHabit,
