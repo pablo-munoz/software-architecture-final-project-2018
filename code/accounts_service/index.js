@@ -51,6 +51,10 @@ app.route('/accounts/login')
 
      try {
        account = business.findAccount(request.body);
+       if (!account)
+         return response.status(400).json({
+           msg: 'Unexistent account'
+         });
      } catch(error) {
        return response.status(400).json(error);
      }
