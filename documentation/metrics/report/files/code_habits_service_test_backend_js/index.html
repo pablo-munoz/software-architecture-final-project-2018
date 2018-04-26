@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - code/habits_service/test/backend.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>code/habits_service/test/backend.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">74.56</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">453</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">34.33</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.80</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">const _ = require(&#039;lodash&#039;);
+const fs = require(&#039;fs&#039;);
+const chai = require(&#039;chai&#039;);
+const sqlite3 = require(&#039;sqlite3&#039;);
+const request = require(&#039;supertest&#039;);
+
+const should = chai.should();
+const expect = chai.expect;
+
+const server = require(&#039;../index&#039;);
+const constants = require(&#039;../constants&#039;);
+
+describe(&#039;Habits service persistence layer&#039;, function() {
+  const persistence = require(&#039;../persistence&#039;)({
+    databaseFile: constants.TEST_DATABASE_FILE
+  });
+  
+  it(&#039;Should be able to retrieve a list of habits for a user&#039;, function(done) {
+    let machingHabits = [];
+    
+    persistence.listHabits(
+      { account: &#039;test@test.com&#039; }, (err, rows) =&gt; {
+        should.not.exist(err);
+        _.map(rows, _.partial(_.omit, _, &#039;id&#039;)).should.be.eql(
+          [ { kind: &#039;good&#039;,
+              difficulty: &#039;medium&#039;,
+              score: 0,
+              name: &#039;Practice TDD&#039;,
+              account: &#039;test@test.com&#039; },
+            { kind: &#039;good&#039;,
+              difficulty: &#039;hard&#039;,
+              score: 0,
+              name: &#039;Practice design patterns&#039;,
+              account: &#039;test@test.com&#039; },
+            { kind: &#039;both&#039;,
+              difficulty: &#039;medium&#039;,
+              score: 0,
+              name: &#039;Play videogames&#039;,
+              account: &#039;test@test.com&#039; } ]);
+
+        done();
+      });
+  });
+
+  it(&#039;Should retrieve a single existing habit fo a user&#039;, function(done) {
+    persistence.getHabit(4, (err, rows) =&gt; {
+      should.not.exist(err);
+      rows.should.be.eql( {
+        id: 4,
+        kind: &#039;bad&#039;,
+        difficulty: &#039;hard&#039;,
+        score: 0,
+        name: &#039;Smoking&#039;,
+        account: &#039;another@test.com&#039;
+      });
+      done();
+    });
+  });
+  
+  it(&#039;Should be able to store a new habit for a user&#039;, (done) =&gt; {
+    let newHabit = undefined;
+    
+    persistence.insertHabit({
+      kind: &#039;good&#039;,
+      difficulty: &#039;easy&#039;,
+      score: 0,
+      name: &#039;Test my code&#039;,
+      account: &#039;another@test.com&#039;
+    }, (err, row) =&gt; {
+      should.not.exist(err);
+      _.omit(row, &#039;id&#039;).should.be.eql({ kind: &#039;good&#039;,
+                                           difficulty: &#039;easy&#039;,
+                                           score: 0,
+                                           name: &#039;Test my code&#039;,
+                                           account: &#039;another@test.com&#039;});
+      done();
+    });
+  });
+  
+  it(&#039;Should be able to update an existing habit for a user&#039;, (done) =&gt; {
+    let oldHabit = {
+      kind: &#039;good&#039;,
+      difficulty: &#039;hard&#039;,
+      score: 0,
+      name: &#039;go for a run&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    let updatedHabit = {
+      kind: &#039;bad&#039;,
+      difficulty: &#039;easy&#039;,
+      score: 5,
+      name: &#039;GO FOR A RUN&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    persistence.updateHabit(5, updatedHabit, (err, rows) =&gt; {
+      should.not.exist(err);
+      rows.should.be.eql(
+        _.extend(updatedHabit, { id: 5 })
+      );
+
+      persistence.updateHabit(5, oldHabit, (err, rows) =&gt; {
+        should.not.exist(err);
+        rows.should.be.eql(
+          _.extend(oldHabit, { id: 5 })
+        );
+        done();
+      });
+    });
+  });
+  
+  it(&#039;Should be able to delete an existing habit for a user&#039;, (done) =&gt; {
+    const habitToBeCreatedAndDeleted = {
+      kind: &#039;bad&#039;,
+      difficulty: &#039;hard&#039;,
+      name: &#039;Be on facebook&#039;,
+      score: 0,
+      account: &#039;another@test.com&#039;
+    };
+    
+    persistence.insertHabit(habitToBeCreatedAndDeleted, (err, rows) =&gt; {
+      should.not.exist(err);
+      let habitId = rows.id;
+      
+      persistence.deleteHabit(habitId, (err, rows) =&gt; {
+        should.not.exist(err);
+        done();
+      });
+    });
+    
+  });
+});
+
+
+describe(&#039;Habits service business layer&#039;, () =&gt; {
+  const business = require(&#039;../business.js&#039;)();
+
+  it(&#039;createHabit should barf on missing attributes&#039;, (done) =&gt; {
+    business.createHabit({}, (err, rows) =&gt; {
+      should.exist(err);
+      should.not.exist(rows);
+      done();
+    });
+  });
+
+  it(&#039;createHabit should create a habit given the proper data&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;good&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 0,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      should.not.exist(err);
+      _.omit(habit, &#039;id&#039;).should.be.eql({
+        &#039;kind&#039;: &#039;good&#039;,
+        &#039;difficulty&#039;: &#039;medium&#039;,
+        &#039;score&#039;: 0,
+        &#039;name&#039;: &#039;Do homework&#039;,
+        &#039;account&#039;: &#039;another@test.com&#039;
+      });
+      done();
+    });
+  });
+
+  it(&#039;should properly do a good red habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;good&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: -1,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;good&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(2.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a good orange habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;good&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 0,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;good&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(3.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a good yellow habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;good&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 10,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;good&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(13.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a good green habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;good&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 40,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;good&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(41.5);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a good blue habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;good&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 50,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;good&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(51.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a bad red habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;bad&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: -1,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;bad&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(-7.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a bad orange habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;bad&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 0,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;bad&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(-4.5);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a bad yellow habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;bad&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 10,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;bad&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(7.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a bad green habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;bad&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 40,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;bad&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(37.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should properly do a bad blue habit&#039;, (done) =&gt; {
+    business.createHabit({
+      &#039;kind&#039;: &#039;bad&#039;,
+      &#039;difficulty&#039;: &#039;medium&#039;,
+      &#039;score&#039;: 50,
+      &#039;name&#039;: &#039;Do homework&#039;,
+      &#039;account&#039;: &#039;another@test.com&#039;
+    }, (err, habit) =&gt; {
+      business.updateHabitScore(habit, &#039;bad&#039;, (err, scoredHabit) =&gt; {
+        expect(scoredHabit.score).to.be.equal(47.0);
+        done();
+      });
+    })
+  });
+
+  it(&#039;should retrieve the habits of a user&#039;, (done) =&gt; {
+    business.listHabits(
+      { account: &#039;test@test.com&#039; }, (err, habits) =&gt; {
+        should.not.exist(err);
+        _.map(habits, _.partial(_.omit, _, &#039;id&#039;)).should.be.eql(
+          [ { kind: &#039;good&#039;,
+              difficulty: &#039;medium&#039;,
+              score: 0,
+              name: &#039;Practice TDD&#039;,
+              account: &#039;test@test.com&#039; },
+            { kind: &#039;good&#039;,
+              difficulty: &#039;hard&#039;,
+              score: 0,
+              name: &#039;Practice design patterns&#039;,
+              account: &#039;test@test.com&#039; },
+            { kind: &#039;both&#039;,
+              difficulty: &#039;medium&#039;,
+              score: 0,
+              name: &#039;Play videogames&#039;,
+              account: &#039;test@test.com&#039; } ]);
+
+        done();
+      });
+  });
+
+  it(&#039;should retrive all the habits of all users&#039;, (done) =&gt; {
+    business.listHabits(undefined, (err,  habits) =&gt; {
+      expect(habits.length).to.be.at.least(5);
+      done();
+    });
+  });
+
+  it(&#039;should be able to update an existing habit for a user&#039;, (done) =&gt; {
+    let oldHabit = {
+      kind: &#039;good&#039;,
+      difficulty: &#039;hard&#039;,
+      score: 0,
+      name: &#039;go for a run&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    let updatedHabit = {
+      kind: &#039;bad&#039;,
+      difficulty: &#039;easy&#039;,
+      score: 5,
+      name: &#039;GO FOR A RUN&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    business.updateHabit(5, updatedHabit, (err, rows) =&gt; {
+      should.not.exist(err);
+      rows.should.be.eql(
+        _.extend(updatedHabit, { id: 5 })
+      );
+
+      business.updateHabit(5, oldHabit, (err, rows) =&gt; {
+        should.not.exist(err);
+        rows.should.be.eql(
+          _.extend(oldHabit, { id: 5 })
+        );
+        done();
+      });
+    });
+  });
+
+  it(&#039;should be able to delete an existing habit for a user&#039;, (done) =&gt; {
+    const habitToBeCreatedAndDeleted = {
+      kind: &#039;bad&#039;,
+      difficulty: &#039;hard&#039;,
+      name: &#039;Be on facebook&#039;,
+      score: 0,
+      account: &#039;another@test.com&#039;
+    };
+    
+    business.createHabit(habitToBeCreatedAndDeleted, (err, rows) =&gt; {
+      should.not.exist(err);
+      let habitId = rows.id;
+      
+      business.deleteHabit(habitId, (err, rows) =&gt; {
+        should.not.exist(err);
+        done();
+      });
+    });
+    
+  });
+
+});
+
+
+describe(&#039;Accounts service api&#039;, function() {
+  it(&#039;GET /habits with no criteria should return all accounts&#039;, function(done) {
+    request(server)
+      .get(&#039;/habits&#039;)
+      .end(function(err, res) {
+        expect(res.body.length).to.be.at.least(5);
+        done();
+      });
+  });
+
+  it(&#039;GET /habits with criteria should return some accounts&#039;, function(done) {
+    request(server)
+      .get(&#039;/habits&#039;)
+      .send({
+        account: &#039;test@test.com&#039;
+      })
+      .set(&#039;Accept&#039;, &#039;application/json&#039;)
+      .expect(&#039;Content-Type&#039;, /json/)
+      .expect(200)
+      .end(function(err, res) {
+        expect(res.body.length).to.be.equal(3);
+        done();
+      });
+  });
+
+  it(&#039;POST /habits create a new habit&#039;, function(done) {
+    request(server)
+      .post(&#039;/habits&#039;)
+      .send({
+        &quot;kind&quot;: &quot;bad&quot;,
+        &quot;difficulty&quot;: &quot;medium&quot;,
+        &quot;name&quot;: &quot;sleeping in class&quot;,
+        &quot;score&quot;: 0,
+        &quot;account&quot;: &quot;another@test.com&quot;
+      })
+      .end(function(err, res) {
+        _.omit(res.body, &#039;id&#039;).should.be.eql({
+          &quot;kind&quot;: &quot;bad&quot;,
+          &quot;difficulty&quot;: &quot;medium&quot;,
+          &quot;name&quot;: &quot;sleeping in class&quot;,
+          &quot;score&quot;: 0,
+          &quot;account&quot;: &quot;another@test.com&quot;
+        });
+        done();
+      });
+  });
+
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

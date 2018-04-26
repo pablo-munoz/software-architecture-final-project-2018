@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - code/tasks_service/test/backend.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>code/tasks_service/test/backend.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">69.83</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">373</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">27.17</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.10</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">const _ = require(&#039;lodash&#039;);
+const fs = require(&#039;fs&#039;);
+const chai = require(&#039;chai&#039;);
+const sqlite3 = require(&#039;sqlite3&#039;);
+const request = require(&#039;supertest&#039;);
+
+const should = chai.should();
+const expect = chai.expect;
+
+const server = require(&#039;../index&#039;);
+const constants = require(&#039;../constants&#039;);
+
+describe(&#039;Tasks service persistence layer&#039;, function() {
+  const persistence = require(&#039;../persistence&#039;)({
+    databaseFile: constants.TEST_DATABASE_FILE
+  });
+  
+  it(&#039;Should be able to retrieve a list of tasks for a user&#039;, function(done) {
+    let machingTasks = [];
+    
+    persistence.listTasks(
+      { account: &#039;test@test.com&#039; }, (err, rows) =&gt; {
+        should.not.exist(err);
+        _.map(rows, _.partial(_.omit, _, &#039;id&#039;)).should.be.eql(
+          [ { title: &#039;Doctors appointment&#039;,
+              description: &#039;Get my eyes checked&#039;,
+              due_date: &#039;2018-04-29&#039;,
+              done_date: null,
+              reminder_days: 1,
+              reminder_time: &#039;17:00:00&#039;,
+              account: &#039;test@test.com&#039; },
+            { title: &#039;Vaccinate dog&#039;,
+              description: &#039;Take the little one to the vet&#039;,
+              due_date: &#039;2018-04-25&#039;,
+              done_date: null,
+              reminder_days: 2,
+              reminder_time: &#039;09:00:00&#039;,
+              account: &#039;test@test.com&#039; },
+            { title: &#039;Go to the airport&#039;,
+              description: &#039;Pick up father from airport&#039;,
+              due_date: &#039;2018-04-20&#039;,
+              done_date: null,
+              reminder_days: 0,
+              reminder_time: &#039;12:00:00&#039;,
+              account: &#039;test@test.com&#039; } ]);
+
+        done();
+      });
+  });
+
+  it(&#039;Should retrieve a single existing task fo a user&#039;, function(done) {
+    persistence.getTask(1, (err, row) =&gt; {
+      should.not.exist(err);
+      _.omit(row, &#039;id&#039;).should.be.eql({
+        title: &#039;Doctors appointment&#039;,
+        description: &#039;Get my eyes checked&#039;,
+        due_date: &#039;2018-04-29&#039;,
+        done_date: null,
+        reminder_days: 1,
+        reminder_time: &#039;17:00:00&#039;,
+        account: &#039;test@test.com&#039; });
+      done();
+    });
+  });
+  
+  it(&#039;Should be able to store a new task for a user&#039;, (done) =&gt; {
+    let newTask = undefined;
+    
+    persistence.insertTask({
+      title: &#039;Pay credit card&#039;,
+      description: &#039;Pay Santander credit card online&#039;,
+      due_date: &#039;2018-04-23&#039;,
+      done_date: null,
+      reminder_days: 2,
+      reminder_time: &#039;11:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    }, (err, row) =&gt; {
+      should.not.exist(err);
+      _.omit(row, &#039;id&#039;).should.be.eql({
+        title: &#039;Pay credit card&#039;,
+        description: &#039;Pay Santander credit card online&#039;,
+        due_date: &#039;2018-04-23&#039;,
+        done_date: null,
+        reminder_days: 2,
+        reminder_time: &#039;11:00:00&#039;,
+        account: &#039;another@test.com&#039;
+      });
+      done();
+    });
+  });
+  
+  it(&#039;Should be able to update an existing task for a user&#039;, (done) =&gt; {
+    let oldTask = {
+      title: &#039;Vacations&#039;,
+      description: &#039;Go to disney world&#039;,
+      due_date: &#039;2018-05-10&#039;,
+      done_date: null,
+      reminder_days: 2,
+      reminder_time: &#039;07:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    let updatedTask = {
+      title: &#039;VACATIONS&#039;,
+      description: &#039;GO TO DISNEY WORLD&#039;,
+      due_date: &#039;2018-05-10&#039;,
+      done_date: null,
+      reminder_days: 2,
+      reminder_time: &#039;07:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    persistence.updateTask(4, updatedTask, (err, rows) =&gt; {
+      should.not.exist(err);
+      rows.should.be.eql(
+        _.extend(updatedTask, { id: 4 })
+      );
+
+      persistence.updateTask(4, oldTask, (err, rows) =&gt; {
+        should.not.exist(err);
+        rows.should.be.eql(
+          _.extend(oldTask, { id: 4 })
+        );
+        done();
+      });
+    });
+  });
+  
+  it(&#039;Should be able to delete an existing task for a user&#039;, (done) =&gt; {
+    const taskToBeCreatedAndDeleted = {
+      title: &#039;Software Arch Final Project&#039;,
+      description: &#039;Uploat to Schoology&#039;,
+      due_date: &#039;2018-04-23&#039;,
+      done_date: null,
+      reminder_days: 1,
+      reminder_time: &#039;10:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    persistence.insertTask(taskToBeCreatedAndDeleted, (err, rows) =&gt; {
+      should.not.exist(err);
+      let taskId = rows.id;
+      
+      persistence.deleteTask(taskId, (err, rows) =&gt; {
+        should.not.exist(err);
+        done();
+      });
+    });
+    
+  });
+});
+
+
+describe(&#039;Tasks service business layer&#039;, () =&gt; {
+  const business = require(&#039;../business.js&#039;)();
+  
+  it(&#039;createTask should barf on missing attributes&#039;, (done) =&gt; {
+    business.createTask({}, (err, rows) =&gt; {
+      should.exist(err);
+      should.not.exist(rows);
+      done();
+    });
+  });
+  
+  it(&#039;createTask should create a task given the proper data&#039;, (done) =&gt; {
+    business.createTask({
+      title: &#039;Software Arch Final Project&#039;,
+      description: &#039;Uploat to Schoology&#039;,
+      due_date: &#039;2018-04-23&#039;,
+      done_date: null,
+      reminder_days: 1,
+      reminder_time: &#039;10:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    }, (err, task) =&gt; {
+      should.not.exist(err);
+      _.omit(task, &#039;id&#039;).should.be.eql({
+        title: &#039;Software Arch Final Project&#039;,
+        description: &#039;Uploat to Schoology&#039;,
+        due_date: &#039;2018-04-23&#039;,
+        done_date: null,
+        reminder_days: 1,
+        reminder_time: &#039;10:00:00&#039;,
+        account: &#039;another@test.com&#039;
+      });
+      done();
+    });
+  });
+  
+ 
+  it(&#039;should retrieve the tasks of a user&#039;, (done) =&gt; {
+    business.listTasks(
+      { account: &#039;test@test.com&#039; }, (err, tasks) =&gt; {
+        should.not.exist(err);
+        _.map(tasks, _.partial(_.omit, _, &#039;id&#039;)).should.be.eql(
+          [ { title: &#039;Doctors appointment&#039;,
+              description: &#039;Get my eyes checked&#039;,
+              due_date: &#039;2018-04-29&#039;,
+              done_date: null,
+              reminder_days: 1,
+              reminder_time: &#039;17:00:00&#039;,
+              account: &#039;test@test.com&#039; },
+            { title: &#039;Vaccinate dog&#039;,
+              description: &#039;Take the little one to the vet&#039;,
+              due_date: &#039;2018-04-25&#039;,
+              done_date: null,
+              reminder_days: 2,
+              reminder_time: &#039;09:00:00&#039;,
+              account: &#039;test@test.com&#039; },
+            { title: &#039;Go to the airport&#039;,
+              description: &#039;Pick up father from airport&#039;,
+              due_date: &#039;2018-04-20&#039;,
+              done_date: null,
+              reminder_days: 0,
+              reminder_time: &#039;12:00:00&#039;,
+              account: &#039;test@test.com&#039; } ]);
+        
+        done();
+      });
+  });
+  
+  it(&#039;should retrive all the tasks of all users&#039;, (done) =&gt; {
+    business.listTasks(undefined, (err,  tasks) =&gt; {
+      expect(tasks.length).to.be.at.least(5);
+      done();
+    });
+  });
+  
+  it(&#039;should be able to update an existing task for a user&#039;, (done) =&gt; {
+    let oldTask = {
+      title: &#039;Pick up passport&#039;,
+      description: &#039;Go for it&#039;,
+      due_date: &#039;2018-05-06&#039;,
+      done_date: null,
+      reminder_days: 0,
+      reminder_time: &#039;12:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    let updatedTask = {
+      title: &#039;Pick up passport&#039;,
+      description: &#039;Go for it&#039;,
+      due_date: &#039;2018-05-06&#039;,
+      done_date: null,
+      reminder_days: 0,
+      reminder_time: &#039;12:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    business.updateTask(5, updatedTask, (err, rows) =&gt; {
+      should.not.exist(err);
+      rows.should.be.eql(
+        _.extend(updatedTask, { id: 5 })
+      );
+      
+      business.updateTask(5, oldTask, (err, rows) =&gt; {
+        should.not.exist(err);
+        rows.should.be.eql(
+          _.extend(oldTask, { id: 5 })
+        );
+        done();
+      });
+    });
+  });
+  
+  it(&#039;should be able to delete an existing task for a user&#039;, (done) =&gt; {
+    const taskToBeCreatedAndDeleted = {
+      title: &#039;This should have been deleted&#039;,
+      description: &#039;Go for it&#039;,
+      due_date: &#039;2018-05-06&#039;,
+      done_date: null,
+      reminder_days: 0,
+      reminder_time: &#039;12:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    business.createTask(taskToBeCreatedAndDeleted, (err, rows) =&gt; {
+      should.not.exist(err);
+      let taskId = rows.id;
+      
+      business.deleteTask(taskId, (err, rows) =&gt; {
+        should.not.exist(err);
+        done();
+      });
+    });
+  });
+
+  it(&#039;should set the done_date to today when doing a task&#039;, (done) =&gt; {
+    const taskToBeCreatedAndDeleted = {
+      title: &#039;done_date should be today&#039;,
+      description: &#039;Go for it&#039;,
+      due_date: &#039;2018-05-06&#039;,
+      done_date: null,
+      reminder_days: 0,
+      reminder_time: &#039;12:00:00&#039;,
+      account: &#039;another@test.com&#039;
+    };
+    
+    business.createTask(taskToBeCreatedAndDeleted, (err, rows) =&gt; {
+      should.not.exist(err);
+      let taskId = rows.id;
+      
+      business.doTask(taskId, (err, rows) =&gt; {
+        _.omit(rows, &#039;id&#039;).should.be.eql({
+          title: &#039;done_date should be today&#039;,
+          description: &#039;Go for it&#039;,
+          due_date: &#039;2018-05-06&#039;,
+          done_date: business.formatDate(new Date()),
+          reminder_days: 0,
+          reminder_time: &#039;12:00:00&#039;,
+          account: &#039;another@test.com&#039;
+        });
+
+        done();
+      });
+    });
+  });
+  
+});
+
+
+describe(&#039;Accounts service api&#039;, function() {
+  const business = require(&#039;../business.js&#039;)();
+
+  it(&#039;GET /tasks with no criteria should return all accounts&#039;, function(done) {
+    request(server)
+      .get(&#039;/tasks&#039;)
+      .end(function(err, res) {
+        expect(res.body.length).to.be.at.least(5);
+        done();
+      });
+  });
+  
+  it(&#039;GET /tasks with criteria should return some accounts&#039;, function(done) {
+    request(server)
+      .get(&#039;/tasks&#039;)
+      .send({
+        account: &#039;test@test.com&#039;
+      })
+      .set(&#039;Accept&#039;, &#039;application/json&#039;)
+      .expect(&#039;Content-Type&#039;, /json/)
+      .expect(200)
+      .end(function(err, res) {
+        expect(res.body.length).to.be.equal(3);
+        done();
+      });
+  });
+  
+  it(&#039;POST /tasks create a new task&#039;, function(done) {
+    request(server)
+      .post(&#039;/tasks&#039;)
+      .send({
+        &quot;title&quot;: &quot;Use mocha to test api&quot;,
+        &quot;description&quot;: &quot;Run npm test&quot;,
+        &quot;due_date&quot;: business.formatDate(new Date()),
+        &quot;reminder_days&quot;: 0,
+        &quot;reminder_time&quot;: &quot;08:00:00&quot;,
+        &quot;account&quot;: &quot;another@test.com&quot;,
+      })
+      .end(function(err, res) {
+        _.omit(res.body, &#039;id&#039;).should.be.eql({
+          &quot;title&quot;: &quot;Use mocha to test api&quot;,
+          &quot;description&quot;: &quot;Run npm test&quot;,
+          &quot;due_date&quot;: business.formatDate(new Date()),
+          &quot;done_date&quot;: null,
+          &quot;reminder_days&quot;: 0,
+          &quot;reminder_time&quot;: &quot;08:00:00&quot;,
+        &quot;account&quot;: &quot;another@test.com&quot;,
+        });
+        done();
+      });
+  });
+  
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
